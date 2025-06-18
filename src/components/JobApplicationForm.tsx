@@ -1,3 +1,4 @@
+
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -13,7 +14,16 @@ const applicationFormSchema = z.object({
   name: z.string().min(2, { message: 'Name must be at least 2 characters.' }),
   email: z.string().email({ message: 'Please enter a valid email address.' }),
   coverLetter: z.string().min(10, { message: 'Cover letter must be at least 10 characters.' }).optional(),
-  resume: z.any().optional(), // Basic validation for file input
+  resume: z.custom<File>(
+    (val) => typeof File !== 'undefined' && val instanceof File,
+    { message: "Resume is required. Please upload a file." }
+  ).refine(
+    (file) => file && file.size > 0,
+    { message: "Resume file cannot be empty." }
+  ).refine(
+    (file) => file && (file.type === "application/pdf" || file.type === "application/msword" || file.type === "application/vnd.openxmlformats-officedocument.wordprocessingml.document"),
+    { message: "Accepted file types are PDF, DOC, or DOCX."}
+  ),
 });
 
 type ApplicationFormValues = z.infer<typeof applicationFormSchema>;
@@ -30,6 +40,7 @@ export function JobApplicationForm({ jobTitle, onSubmitSuccess }: JobApplication
       name: '',
       email: '',
       coverLetter: '',
+      // resume: undefined, // react-hook-form handles undefined as default
     },
   });
 
@@ -97,14 +108,14 @@ export function JobApplicationForm({ jobTitle, onSubmitSuccess }: JobApplication
               name="resume"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Resume (Optional)</FormLabel>
+                  <FormLabel>Resume</FormLabel>
                   <FormControl>
-                     {/* For actual file handling, more complex logic is needed. This is a placeholder. */}
                     <Input 
                       type="file" 
                       accept=".pdf,.doc,.docx"
                       onChange={(e) => field.onChange(e.target.files ? e.target.files[0] : null)} 
                       className="file:text-primary file:font-medium"
+                      // field.value will be File object or null. We don't need to explicitly pass it to value prop for input type file.
                     />
                   </FormControl>
                   <FormMessage />

@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -10,12 +11,14 @@ import { JobApplicationForm } from '@/components/JobApplicationForm';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { AlertTriangle, ArrowLeft, Briefcase, CalendarCheck2, CheckCircle2, DollarSign, ListChecks, MapPin, UserCheck } from 'lucide-react';
+import { AlertTriangle, ArrowLeft, Briefcase, CalendarCheck2, CheckCircle2, DollarSign, ListChecks, MapPin, UserCheck, Share2 } from 'lucide-react';
 import { format } from 'date-fns';
+import { useToast } from "@/hooks/use-toast";
 
 export default function JobDetailPage() {
   const params = useParams();
   const jobId = typeof params?.id === 'string' ? params.id : '';
+  const { toast } = useToast();
   
   const [job, setJob] = useState<Job | null | undefined>(undefined); // undefined for loading, null for not found
   const [isAdModalOpen, setIsAdModalOpen] = useState(false);
@@ -25,9 +28,9 @@ export default function JobDetailPage() {
   useEffect(() => {
     if (jobId) {
       const foundJob = getJobById(jobId);
-      setJob(foundJob); // Will be undefined if not found, then updated to null if truly not found
+      setJob(foundJob); 
       if (!foundJob) {
-        setJob(null); // Explicitly set to null if not found after check
+        setJob(null); 
       }
     }
   }, [jobId]);
@@ -43,6 +46,24 @@ export default function JobDetailPage() {
   const handleApplicationSubmitSuccess = () => {
     setShowApplicationForm(false);
     setApplicationSubmitted(true);
+  };
+
+  const handleShare = async () => {
+    const url = window.location.href;
+    try {
+      await navigator.clipboard.writeText(url);
+      toast({
+        title: "Link Copied!",
+        description: "Job link copied to your clipboard.",
+      });
+    } catch (err) {
+      console.error('Failed to copy link: ', err);
+      toast({
+        title: "Error Copying Link",
+        description: "Could not copy the job link to your clipboard.",
+        variant: "destructive",
+      });
+    }
   };
 
   if (job === undefined) {
@@ -134,15 +155,20 @@ export default function JobDetailPage() {
             </div>
           )}
           
-          <p className="text-sm text-muted-foreground mt-4">
+          <p className="text-sm text-muted-foreground">
             Posted on: {format(job.postedDate, 'MMMM d, yyyy')}
           </p>
 
-          {!showApplicationForm && !applicationSubmitted && (
-            <Button onClick={handleApplyClick} size="lg" className="w-full sm:w-auto bg-accent hover:bg-accent/90 text-accent-foreground">
-              Apply for this Job
+          <div className="flex flex-col sm:flex-row flex-wrap items-center gap-4 pt-2">
+            {!showApplicationForm && !applicationSubmitted && (
+              <Button onClick={handleApplyClick} size="lg" className="flex-grow w-full sm:w-auto bg-accent hover:bg-accent/90 text-accent-foreground">
+                Apply for this Job
+              </Button>
+            )}
+            <Button onClick={handleShare} variant="outline" size="lg" className="flex-grow w-full sm:w-auto">
+              <Share2 className="mr-2 h-5 w-5" /> Share Job
             </Button>
-          )}
+          </div>
         </CardContent>
       </Card>
 
