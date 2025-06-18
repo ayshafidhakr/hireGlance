@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -5,6 +6,7 @@ import Image from 'next/image';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
+import { incrementAdsWatched, incrementAdsSkipped } from '@/lib/jobs';
 
 interface AdModalProps {
   isOpen: boolean;
@@ -17,12 +19,14 @@ const AD_DURATION_SECONDS = 5;
 export function AdModal({ isOpen, onClose, onAdWatched }: AdModalProps) {
   const [progress, setProgress] = useState(0);
   const [countdown, setCountdown] = useState(AD_DURATION_SECONDS);
+  const [adSkipped, setAdSkipped] = useState(false);
 
   useEffect(() => {
-    let timer: NodeJS.Timeout;
+    let timer: NodeJS.Timeout | undefined;
     if (isOpen) {
       setProgress(0);
       setCountdown(AD_DURATION_SECONDS);
+      setAdSkipped(false); // Reset skip status
       let elapsed = 0;
       timer = setInterval(() => {
         elapsed += 0.1;
@@ -33,17 +37,36 @@ export function AdModal({ isOpen, onClose, onAdWatched }: AdModalProps) {
           clearInterval(timer);
         }
       }, 100);
+    } else {
+       // If modal is closed before ad completion and not already marked as watched
+      if (progress < 100 && !adSkipped && isOpen === false && countdown > 0) { // Check isOpen from previous render
+         // This logic is tricky because isOpen becomes false immediately.
+         // A better way would be to track on an unmount-like effect or via the onClose prop
+      }
     }
     return () => clearInterval(timer);
-  }, [isOpen]);
+  }, [isOpen]); // countdown removed to prevent re-triggering interval
 
-  const handleAdWatched = () => {
+  const handleModalClose = (open: boolean) => {
+    if (!open) { // Dialog is closing
+      if (progress < 100 && !adSkipped) {
+        incrementAdsSkipped();
+        setAdSkipped(true);
+      }
+      onClose();
+    }
+  };
+  
+  const handleAdWatchedAndProceed = () => {
+    if (progress >= 100) {
+      incrementAdsWatched();
+    }
     onAdWatched();
-    onClose();
+    onClose(); // Ensure modal closes
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
+    <Dialog open={isOpen} onOpenChange={handleModalClose}>
       <DialogContent className="sm:max-w-[525px] bg-card text-card-foreground">
         <DialogHeader>
           <DialogTitle className="text-primary font-headline">Watch Ad to Apply</DialogTitle>
@@ -68,7 +91,7 @@ export function AdModal({ isOpen, onClose, onAdWatched }: AdModalProps) {
         </div>
         <DialogFooter>
           <Button 
-            onClick={handleAdWatched} 
+            onClick={handleAdWatchedAndProceed} 
             disabled={progress < 100}
             className="bg-accent hover:bg-accent/90 text-accent-foreground w-full"
             aria-label={progress < 100 ? `Wait ${countdown} more seconds` : "Proceed to application"}

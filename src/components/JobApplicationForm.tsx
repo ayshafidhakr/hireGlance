@@ -9,6 +9,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { incrementApplicationCount } from '@/lib/jobs';
 
 const applicationFormSchema = z.object({
   name: z.string().min(2, { message: 'Name must be at least 2 characters.' }),
@@ -17,11 +18,8 @@ const applicationFormSchema = z.object({
   collegeDetails: z.string().min(3, { message: 'College/University name must be at least 3 characters.' }),
   coverLetter: z.string().min(10, { message: 'Cover letter must be at least 10 characters.' }).optional(),
   resume: z.custom<File>(
-    (val) => typeof File !== 'undefined' && val instanceof File,
+    (val) => typeof File !== 'undefined' && val instanceof File && val.size > 0 , // Check if val is a File and has size
     { message: "Resume is required. Please upload a file." }
-  ).refine(
-    (file) => file && file.size > 0,
-    { message: "Resume file cannot be empty." }
   ).refine(
     (file) => file && (file.type === "application/pdf" || file.type === "application/msword" || file.type === "application/vnd.openxmlformats-officedocument.wordprocessingml.document"),
     { message: "Accepted file types are PDF, DOC, or DOCX."}
@@ -44,13 +42,12 @@ export function JobApplicationForm({ jobTitle, onSubmitSuccess }: JobApplication
       qualificationDetails: '',
       collegeDetails: '',
       coverLetter: '',
-      // resume: undefined, // react-hook-form handles undefined as default
     },
   });
 
   function onSubmit(data: ApplicationFormValues) {
     console.log('Application submitted:', data);
-    // Simulate submission
+    incrementApplicationCount(); // Track application submission
     onSubmitSuccess();
     form.reset();
   }
@@ -136,15 +133,16 @@ export function JobApplicationForm({ jobTitle, onSubmitSuccess }: JobApplication
              <FormField
               control={form.control}
               name="resume"
-              render={({ field }) => (
+              render={({ field: { onChange, value, ...rest } }) => ( // Destructure field to handle file input correctly
                 <FormItem>
                   <FormLabel>Resume</FormLabel>
                   <FormControl>
                     <Input 
                       type="file" 
                       accept=".pdf,.doc,.docx"
-                      onChange={(e) => field.onChange(e.target.files ? e.target.files[0] : null)} 
+                      onChange={(e) => onChange(e.target.files ? e.target.files[0] : null)}
                       className="file:text-primary file:font-medium"
+                      {...rest}
                     />
                   </FormControl>
                   <FormMessage />

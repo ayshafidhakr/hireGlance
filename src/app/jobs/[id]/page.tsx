@@ -11,8 +11,8 @@ import { JobApplicationForm } from '@/components/JobApplicationForm';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { AlertTriangle, ArrowLeft, Briefcase, CalendarCheck2, CheckCircle2, DollarSign, ListChecks, MapPin, UserCheck, Share2 } from 'lucide-react';
-import { format } from 'date-fns';
+import { AlertTriangle, ArrowLeft, Briefcase, CalendarCheck2, CheckCircle2, DollarSign, ListChecks, MapPin, UserCheck, Share2, AlertCircle } from 'lucide-react';
+import { format, isPast } from 'date-fns';
 import { useToast } from "@/hooks/use-toast";
 
 export default function JobDetailPage() {
@@ -24,6 +24,7 @@ export default function JobDetailPage() {
   const [isAdModalOpen, setIsAdModalOpen] = useState(false);
   const [showApplicationForm, setShowApplicationForm] = useState(false);
   const [applicationSubmitted, setApplicationSubmitted] = useState(false);
+  const [isExpired, setIsExpired] = useState(false);
 
   useEffect(() => {
     if (jobId) {
@@ -31,11 +32,16 @@ export default function JobDetailPage() {
       setJob(foundJob); 
       if (!foundJob) {
         setJob(null); 
+      } else if (foundJob.expirationDate && isPast(foundJob.expirationDate)) {
+        setIsExpired(true);
+      } else {
+        setIsExpired(false);
       }
     }
   }, [jobId]);
 
   const handleApplyClick = () => {
+    if (isExpired) return;
     setIsAdModalOpen(true);
   };
 
@@ -121,6 +127,11 @@ export default function JobDetailPage() {
                 <DollarSign size={18} /> <span>{job.salaryRange}</span>
               </div>
             )}
+             {isExpired && (
+              <div className="flex items-center gap-2 text-destructive mt-2">
+                <AlertCircle size={18} /> <span>This job posting has expired.</span>
+              </div>
+            )}
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
@@ -157,12 +168,22 @@ export default function JobDetailPage() {
           
           <p className="text-sm text-muted-foreground">
             Posted on: {format(job.postedDate, 'MMMM d, yyyy')}
+            {job.expirationDate && (
+              <span className={isExpired ? 'text-destructive' : ''}>
+                {' '}| Expires on: {format(job.expirationDate, 'MMMM d, yyyy')}
+              </span>
+            )}
           </p>
 
           <div className="flex flex-col sm:flex-row flex-wrap items-center gap-4 pt-2">
             {!showApplicationForm && !applicationSubmitted && (
-              <Button onClick={handleApplyClick} size="lg" className="flex-grow w-full sm:w-auto bg-accent hover:bg-accent/90 text-accent-foreground">
-                Apply for this Job
+              <Button 
+                onClick={handleApplyClick} 
+                size="lg" 
+                className="flex-grow w-full sm:w-auto bg-accent hover:bg-accent/90 text-accent-foreground disabled:opacity-50"
+                disabled={isExpired}
+              >
+                {isExpired ? 'Posting Expired' : 'Apply for this Job'}
               </Button>
             )}
             <Button onClick={handleShare} variant="outline" size="lg" className="flex-grow w-full sm:w-auto">
@@ -180,7 +201,7 @@ export default function JobDetailPage() {
         </div>
       )}
 
-      {showApplicationForm && !applicationSubmitted && (
+      {showApplicationForm && !applicationSubmitted && !isExpired && (
         <div className="mt-8">
           <JobApplicationForm jobTitle={job.title} onSubmitSuccess={handleApplicationSubmitSuccess} />
         </div>
