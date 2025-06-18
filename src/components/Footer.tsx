@@ -1,3 +1,4 @@
+
 import Link from 'next/link';
 
 export function Footer() {
@@ -8,7 +9,10 @@ export function Footer() {
           &copy; {new Date().getFullYear()} HireGlance. All rights reserved.
         </p>
         <p className="text-sm">
-          Developed with{' '}
+          <span className="inline-block hover:animate-pop-subtle bg-gradient-to-r from-primary via-accent to-secondary bg-200% animate-text-gradient-flow bg-clip-text text-transparent">
+            Developed with
+          </span>
+          {' '}
           <span
             role="img"
             aria-label="heart"
@@ -16,7 +20,11 @@ export function Footer() {
           >
             ❤️
           </span>
-          {' '}by{' '}
+          {' '}
+          <span className="inline-block hover:animate-pop-subtle bg-gradient-to-r from-primary via-accent to-secondary bg-200% animate-text-gradient-flow bg-clip-text text-transparent">
+            by
+          </span>
+          {' '}
           <Link
             href="https://github.com/ayshafidhakr"
             target="_blank"
@@ -30,3 +38,4 @@ export function Footer() {
     </footer>
   );
 }
+
