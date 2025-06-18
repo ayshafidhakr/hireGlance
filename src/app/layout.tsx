@@ -1,3 +1,4 @@
+
 import type { Metadata } from 'next';
 import './globals.css';
 import { Header } from '@/components/Header';
@@ -5,8 +6,8 @@ import { Footer } from '@/components/Footer';
 import { Toaster } from '@/components/ui/toaster';
 
 export const metadata: Metadata = {
-  title: 'HireGlance - Medical Professional Jobs',
-  description: 'Find and apply for medical professional jobs on HireGlance.',
+  title: 'HireGlance - Medical Professional Jobs in India',
+  description: 'Find and apply for medical professional jobs in India. This website is for residents of India only.',
 };
 
 export default function RootLayout({
