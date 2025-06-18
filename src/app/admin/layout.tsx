@@ -5,7 +5,7 @@ import { useEffect } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import { useAuth } from '@/hooks/useAuth';
 import { AdminHeader } from '@/components/AdminHeader';
-import { Toaster } from '@/components/ui/toaster';
+// Toaster is already in RootLayout, so no need to import or render it here again.
 
 export default function AdminLayout({
   children,
@@ -17,8 +17,17 @@ export default function AdminLayout({
   const pathname = usePathname();
 
   useEffect(() => {
-    if (!isLoading && !isAuthenticated && pathname !== '/admin/login') {
+    // If still loading auth state, do nothing yet.
+    if (isLoading) {
+      return;
+    }
+    // If not loading, not authenticated, and not on the login page, redirect to login.
+    if (!isAuthenticated && pathname !== '/admin/login') {
       router.push('/admin/login');
+    }
+    // If authenticated and on the login page, redirect to dashboard.
+    if (isAuthenticated && pathname === '/admin/login') {
+      router.push('/admin/dashboard');
     }
   }, [isAuthenticated, isLoading, router, pathname]);
 
@@ -31,38 +40,28 @@ export default function AdminLayout({
     );
   }
 
-  // Allow login page to render without full layout if not authenticated
+  // If not authenticated and on the login page, render children (the login page itself)
+  // The RootLayout will provide the html, body, and main wrapping structure.
   if (!isAuthenticated && pathname === '/admin/login') {
-    return (
-        <html lang="en">
-            <body className="font-body antialiased flex flex-col min-h-screen bg-background">
-                <main className="flex-grow container mx-auto px-4 py-8 flex items-center justify-center">
-                    {children}
-                </main>
-                <Toaster />
-            </body>
-        </html>
-    );
+    // The LoginPage component itself should handle its own layout (e.g., centering the form)
+    // This will be rendered inside RootLayout's <main> tag.
+    return <>{children}</>;
   }
   
-  if (!isAuthenticated && pathname !== '/admin/login') {
-    // This case should ideally be caught by the useEffect redirect,
-    // but as a fallback, don't render children if not auth and not on login page.
-    return null; 
+  // If authenticated, render the admin header and children (protected content)
+  // This will also be rendered inside RootLayout's <main> tag.
+  if (isAuthenticated) {
+    return (
+      <div className="flex flex-col flex-1 min-h-full bg-secondary/20"> {/* Apply admin-specific background here if needed, taking full height within RootLayout's main */}
+        <AdminHeader />
+        <div className="flex-grow container mx-auto px-4 py-8"> {/* Match RootLayout's main padding or adjust as needed */}
+          {children}
+        </div>
+      </div>
+    );
   }
 
-  return (
-    <html lang="en">
-        <head>
-            <title>HireGlance Admin</title>
-        </head>
-      <body className="font-body antialiased flex flex-col min-h-screen bg-secondary/20">
-        <AdminHeader />
-        <main className="flex-grow container mx-auto px-4 py-8">
-          {children}
-        </main>
-        <Toaster />
-      </body>
-    </html>
-  );
+  // Fallback: If not loading, not authenticated, and not on login page (should be caught by redirect, but good to have)
+  // This helps prevent rendering protected content if the redirect hasn't happened yet.
+  return null; 
 }
