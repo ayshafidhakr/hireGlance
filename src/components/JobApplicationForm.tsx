@@ -13,6 +13,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 const applicationFormSchema = z.object({
   name: z.string().min(2, { message: 'Name must be at least 2 characters.' }),
   email: z.string().email({ message: 'Please enter a valid email address.' }),
+  qualificationDetails: z.string().min(5, { message: 'Qualification details must be at least 5 characters.' }),
+  collegeDetails: z.string().min(3, { message: 'College/University name must be at least 3 characters.' }),
   coverLetter: z.string().min(10, { message: 'Cover letter must be at least 10 characters.' }).optional(),
   resume: z.custom<File>(
     (val) => typeof File !== 'undefined' && val instanceof File,
@@ -39,6 +41,8 @@ export function JobApplicationForm({ jobTitle, onSubmitSuccess }: JobApplication
     defaultValues: {
       name: '',
       email: '',
+      qualificationDetails: '',
+      collegeDetails: '',
       coverLetter: '',
       // resume: undefined, // react-hook-form handles undefined as default
     },
@@ -87,6 +91,32 @@ export function JobApplicationForm({ jobTitle, onSubmitSuccess }: JobApplication
             />
             <FormField
               control={form.control}
+              name="qualificationDetails"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Qualification Details</FormLabel>
+                  <FormControl>
+                    <Input placeholder="e.g. MBBS, MD (Cardiology)" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="collegeDetails"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>College/University Name</FormLabel>
+                  <FormControl>
+                    <Input placeholder="e.g. All India Institute of Medical Sciences" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
               name="coverLetter"
               render={({ field }) => (
                 <FormItem>
@@ -115,7 +145,6 @@ export function JobApplicationForm({ jobTitle, onSubmitSuccess }: JobApplication
                       accept=".pdf,.doc,.docx"
                       onChange={(e) => field.onChange(e.target.files ? e.target.files[0] : null)} 
                       className="file:text-primary file:font-medium"
-                      // field.value will be File object or null. We don't need to explicitly pass it to value prop for input type file.
                     />
                   </FormControl>
                   <FormMessage />
