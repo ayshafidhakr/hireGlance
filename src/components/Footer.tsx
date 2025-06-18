@@ -8,8 +8,21 @@ export function Footer() {
           &copy; {new Date().getFullYear()} HireGlance. All rights reserved.
         </p>
         <p className="text-sm">
-          Developed with <span role="img" aria-label="heart" className="text-red-500">❤️</span> by{' '}
-          <Link href="https://github.com/ayshafidhakr" target="_blank" rel="noopener noreferrer" className="underline hover:text-primary transition-colors">
+          Developed with{' '}
+          <span
+            role="img"
+            aria-label="heart"
+            className="inline-block text-accent animate-pulse-heart mx-1"
+          >
+            ❤️
+          </span>
+          {' '}by{' '}
+          <Link
+            href="https://github.com/ayshafidhakr"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-block hover:animate-pop-subtle font-semibold bg-gradient-to-r from-primary via-accent to-secondary bg-200% animate-text-gradient-flow bg-clip-text text-transparent"
+          >
             Fidhaysha
           </Link>
         </p>

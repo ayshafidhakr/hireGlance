@@ -88,11 +88,30 @@ export default {
             height: '0',
           },
         },
+        textGradientFlow: {
+          '0%': { backgroundPosition: '0% 50%' },
+          '50%': { backgroundPosition: '100% 50%' },
+          '100%': { backgroundPosition: '0% 50%' },
+        },
+        pop: {
+          '0%, 100%': { transform: 'scale(1)' },
+          '50%': { transform: 'scale(1.05)' },
+        },
+        pulseHeart: {
+          '0%, 100%': { transform: 'scale(1)' },
+          '50%': { transform: 'scale(1.15)' },
+        }
       },
       animation: {
         'accordion-down': 'accordion-down 0.2s ease-out',
         'accordion-up': 'accordion-up 0.2s ease-out',
+        'text-gradient-flow': 'textGradientFlow 3s ease-in-out infinite',
+        'pop-subtle': 'pop 0.3s ease-out 1',
+        'pulse-heart': 'pulseHeart 1.5s ease-in-out infinite',
       },
+      backgroundSize: {
+        '200%': '200% auto',
+      }
     },
   },
   plugins: [require('tailwindcss-animate')],
