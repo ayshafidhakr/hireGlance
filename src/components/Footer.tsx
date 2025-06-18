@@ -29,7 +29,7 @@ export function Footer() {
             href="https://github.com/ayshafidhakr"
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-block hover:animate-pop-subtle font-semibold bg-gradient-to-r from-primary via-accent to-secondary bg-200% animate-text-gradient-flow bg-clip-text text-transparent"
+            className="inline-block hover:animate-pop-subtle font-semibold bg-gradient-to-r from-primary via-accent to-secondary bg-200% animate-text-gradient-flow bg-clip-text text-transparent hover:underline underline-offset-4"
           >
             Fidhaysha
           </Link>
