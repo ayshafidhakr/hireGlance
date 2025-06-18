@@ -9,7 +9,7 @@ export default function HomePage() {
   return (
     <div className="space-y-8">
       <h1 className="text-3xl md:text-4xl font-headline font-bold text-center text-primary">
-        Current Medical Job Openings in India
+        Advancing Healthcare Careers Across India - Find Your Calling!
       </h1>
       <p className="text-center text-lg text-foreground/80 max-w-2xl mx-auto">
         Explore exciting career opportunities in the healthcare sector across India. Find your next role with HireGlance. (For residents of India only)
@@ -26,3 +26,4 @@ export default function HomePage() {
     </div>
   );
 }
+
