@@ -2,18 +2,18 @@
 'use client';
 
 import { useState } from 'react';
-import { useAuth } from '@/hooks/useAuth';
+import { useSuperAuth } from '@/hooks/useSuperAuth';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
-import { BriefcaseMedical, LogIn } from 'lucide-react';
+import { ShieldCheck, LogIn } from 'lucide-react';
 
-export default function LoginPage() {
+export default function SuperAdminLoginPage() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const { login } = useAuth();
+  const { login } = useSuperAuth();
   const { toast } = useToast();
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -29,14 +29,14 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-full py-12">
+    <div className="flex flex-col items-center justify-center min-h-full py-12 bg-secondary/30">
       <Card className="w-full max-w-md shadow-2xl">
         <CardHeader className="text-center">
           <div className="mx-auto mb-4">
-            <BriefcaseMedical className="h-16 w-16 text-primary" />
+            <ShieldCheck className="h-16 w-16 text-accent" />
           </div>
-          <CardTitle className="text-3xl font-bold text-primary">Administrator Login</CardTitle>
-          <CardDescription>Access the HireGlance job management panel.</CardDescription>
+          <CardTitle className="text-3xl font-bold text-accent">Super Admin Login</CardTitle>
+          <CardDescription>Access the HireGlance site analytics panel.</CardDescription>
         </CardHeader>
         <form onSubmit={handleSubmit}>
           <CardContent className="space-y-6">
@@ -47,7 +47,7 @@ export default function LoginPage() {
                 type="text"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
-                placeholder="admin"
+                placeholder="superadmin"
                 required
                 className="text-base"
               />
@@ -59,14 +59,14 @@ export default function LoginPage() {
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                placeholder="password"
+                placeholder="superpassword"
                 required
                 className="text-base"
               />
             </div>
           </CardContent>
           <CardFooter>
-            <Button type="submit" className="w-full text-lg py-6 bg-primary hover:bg-primary/90">
+            <Button type="submit" className="w-full text-lg py-6 bg-accent hover:bg-accent/90 text-accent-foreground">
               <LogIn className="mr-2 h-5 w-5" /> Login
             </Button>
           </CardFooter>

@@ -25,12 +25,12 @@ export function AdminHeader() {
     <header className="bg-primary text-primary-foreground shadow-md sticky top-0 z-40">
       <div className="container mx-auto px-4 py-3 flex items-center justify-between">
         <Link href="/admin/dashboard" className="flex items-center gap-2 text-xl font-headline font-bold">
-          HireGlance Admin
+          HireGlance Administrator
         </Link>
         <nav className="flex items-center gap-2 sm:gap-4">
           {navItems.map((item) => {
             const Icon = item.icon;
-            const isActive = pathname === item.href;
+            const isActive = pathname.startsWith(item.href);
             return (
               <Button
                 key={item.href}

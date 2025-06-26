@@ -15,10 +15,12 @@ export interface Job {
 }
 
 export interface AdminAnalytics {
+  totalJobs: number;
   totalVisitors: number | string; // Can be string for placeholder like "N/A"
   totalApplications: number;
   adsWatched: number;
   adsSkipped: number;
   adEarnings: string; // Placeholder
   siteGrowth: string; // Placeholder
+  adPromotionRequests: number;
 }

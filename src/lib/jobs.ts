@@ -1,5 +1,5 @@
 
-import type { Job } from '@/types';
+import type { Job, AdminAnalytics } from '@/types';
 import { parseISO, isPast } from 'date-fns';
 
 const LOCAL_STORAGE_JOBS_KEY = 'hireglance_custom_jobs';
@@ -175,15 +175,17 @@ export function addJob(jobData: Omit<Job, 'id' | 'postedDate'> & { expirationDat
 // Analytics helpers (mocked with localStorage)
 const ANALYTICS_KEY = 'hireglance_analytics';
 
-export const getAnalytics = (): import('@/types').AdminAnalytics => {
+export const getAnalytics = (): AdminAnalytics => {
   if (typeof window === 'undefined') {
     return {
+      totalJobs: 0,
       totalVisitors: 'N/A',
       totalApplications: 0,
       adsWatched: 0,
       adsSkipped: 0,
       adEarnings: '₹0 (Mock)',
       siteGrowth: '+0% (Mock)',
+      adPromotionRequests: 0,
     };
   }
   const stored = localStorage.getItem(ANALYTICS_KEY);
@@ -194,11 +196,17 @@ export const getAnalytics = (): import('@/types').AdminAnalytics => {
     adsSkipped: 0,
     adEarnings: '₹5,800 (Mock)', // Placeholder
     siteGrowth: '+5% MoM (Mock)', // Placeholder
+    adPromotionRequests: 12, // New mock data
   };
-  return stored ? { ...defaults, ...JSON.parse(stored) } : defaults;
+   const storedData = stored ? JSON.parse(stored) : {};
+  return { 
+      ...defaults, 
+      ...storedData, 
+      totalJobs: getAllJobsForAdmin().length  // Always recalculate total jobs count
+  };
 };
 
-export const updateAnalytics = (data: Partial<import('@/types').AdminAnalytics>) => {
+export const updateAnalytics = (data: Partial<AdminAnalytics>) => {
   if (typeof window === 'undefined') return;
   const current = getAnalytics();
   localStorage.setItem(ANALYTICS_KEY, JSON.stringify({ ...current, ...data }));
