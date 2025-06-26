@@ -77,7 +77,7 @@ export function AdModal({ isOpen, onClose, onAdWatched }: AdModalProps) {
         <div className="my-4 space-y-4">
           <div className="aspect-video bg-muted rounded-md flex items-center justify-center overflow-hidden">
             <Image 
-              src="https://placehold.co/728x90.png?text=Simulated+Advertisement" 
+              src="https://placehold.co/728x90.png" 
               alt="Simulated Advertisement" 
               width={728} 
               height={90}

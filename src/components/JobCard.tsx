@@ -1,3 +1,4 @@
+
 import Link from 'next/link';
 import type { Job } from '@/types';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '@/components/ui/card';

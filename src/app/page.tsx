@@ -1,20 +1,51 @@
 
 'use client';
 
-import { useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
+import { getJobs } from '@/lib/jobs';
+import type { Job } from '@/types';
+import { JobCard } from '@/components/JobCard';
 
 export default function HomePage() {
-  const router = useRouter();
+  const [jobs, setJobs] = useState<Job[]>([]);
 
   useEffect(() => {
-    router.replace('/superadmin/login');
-  }, [router]);
+    // Fetch jobs on the client side since they rely on localStorage
+    setJobs(getJobs());
+  }, []);
 
   return (
-    <div className="flex justify-center items-center min-h-[60vh]">
-      <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-primary"></div>
-      <p className="ml-4 text-lg text-muted-foreground">Redirecting to Admin Portal...</p>
+    <div className="space-y-12">
+      <div className="text-center space-y-4">
+        <h1 className="text-3xl md:text-4xl font-headline font-bold text-primary">
+            Advancing Healthcare Careers Across India - Find Your Calling!
+        </h1>
+        <p className="max-w-2xl mx-auto text-muted-foreground md:text-lg">
+          Browse through curated job openings from top hospitals and clinics. Your next career move is just a click away.
+        </p>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        {jobs.length > 0 ? (
+          jobs.map((job) => (
+            <JobCard key={job.id} job={job} />
+          ))
+        ) : (
+          // Placeholder for loading state or if no jobs are available
+          Array.from({ length: 6 }).map((_, index) => (
+            <div key={index} className="p-6 border rounded-lg bg-card">
+              <div className="h-6 bg-muted rounded w-3/4 mb-4"></div>
+              <div className="h-4 bg-muted rounded w-1/2 mb-6"></div>
+              <div className="h-4 bg-muted rounded w-full mb-2"></div>
+              <div className="h-4 bg-muted rounded w-full mb-2"></div>
+              <div className="h-4 bg-muted rounded w-3/5"></div>
+            </div>
+          ))
+        )}
+      </div>
+       {jobs.length === 0 && (
+         <p className="text-center text-muted-foreground col-span-full">No active job openings at the moment. Please check back later.</p>
+      )}
     </div>
   );
 }

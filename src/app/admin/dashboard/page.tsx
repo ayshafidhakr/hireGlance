@@ -5,17 +5,37 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Briefcase, FilePlus2, AlertCircle } from 'lucide-react';
+import { Briefcase, FilePlus2, AlertCircle, Eye, Link2 } from 'lucide-react';
 import { getAllJobsForAdmin } from '@/lib/jobs';
 import type { Job } from '@/types';
 import { format, isPast } from 'date-fns';
+import { useToast } from '@/hooks/use-toast';
 
 export default function AdminDashboardPage() {
   const [jobs, setJobs] = useState<Job[]>([]);
+  const { toast } = useToast();
 
   useEffect(() => {
     setJobs(getAllJobsForAdmin());
   }, []);
+
+  const handleShare = (jobId: string) => {
+    const url = `${window.location.origin}/jobs/${jobId}`;
+    try {
+      navigator.clipboard.writeText(url);
+      toast({
+        title: "Shareable Link Copied!",
+        description: "The public link to the job has been copied to your clipboard.",
+      });
+    } catch (err) {
+      console.error('Failed to copy link: ', err);
+      toast({
+        title: "Error Copying Link",
+        description: "Could not copy the link.",
+        variant: "destructive",
+      });
+    }
+  };
   
   return (
     <div className="space-y-8">
@@ -37,7 +57,7 @@ export default function AdminDashboardPage() {
             <Briefcase className="h-6 w-6 text-primary" />
             <CardTitle className="text-xl">Job Postings ({jobs.length})</CardTitle>
           </div>
-          <CardDescription>View and manage all job postings.</CardDescription>
+          <CardDescription>View, share, and manage all job postings.</CardDescription>
         </CardHeader>
         <CardContent>
           {jobs.length > 0 ? (
@@ -59,8 +79,15 @@ export default function AdminDashboardPage() {
                         </div>
                       )}
                     </div>
-                    <div className="flex items-center gap-2 mt-4 sm:mt-0">
-                      {/* View and Share buttons removed as they lead to now-deleted public pages. */}
+                    <div className="flex items-center gap-2 mt-4 sm:mt-0 flex-shrink-0">
+                       <Button asChild variant="outline" size="sm">
+                          <Link href={`/jobs/${job.id}`} target="_blank">
+                            <Eye className="mr-2 h-4 w-4" /> View
+                          </Link>
+                        </Button>
+                        <Button variant="secondary" size="sm" onClick={() => handleShare(job.id)}>
+                            <Link2 className="mr-2 h-4 w-4"/> Share
+                        </Button>
                     </div>
                   </Card>
                 );
