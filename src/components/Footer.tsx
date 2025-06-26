@@ -8,8 +8,7 @@ export function Footer() {
           &copy; {new Date().getFullYear()} HireGlance. All rights reserved.
         </p>
         <p className="text-sm">
-          Developed with
-          {' '}
+          <span>Developed with </span>
           <span
             role="img"
             aria-label="heart"
@@ -17,9 +16,7 @@ export function Footer() {
           >
             ❤️
           </span>
-          {' '}
-          by
-          {' '}
+          <span> by </span>
           <Link
             href="https://github.com/ayshafidhakr"
             target="_blank"
