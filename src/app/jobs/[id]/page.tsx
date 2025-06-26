@@ -15,15 +15,16 @@ import { Briefcase, MapPin, CalendarDays, CheckCircle, AlertTriangle, ArrowLeft,
 import { useToast } from '@/hooks/use-toast';
 
 export default function JobDetailPage({ params }: { params: { id: string } }) {
+  const { id } = params;
   const [job, setJob] = useState<Job | null | undefined>(undefined);
   const [isAdModalOpen, setIsAdModalOpen] = useState(false);
   const [hasAdBeenWatched, setHasAdBeenWatched] = useState(false);
   const { toast } = useToast();
 
   useEffect(() => {
-    const fetchedJob = getJobById(params.id);
+    const fetchedJob = getJobById(id);
     setJob(fetchedJob);
-  }, [params.id]);
+  }, [id]);
 
   if (job === undefined) {
     return (
