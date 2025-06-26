@@ -3,6 +3,7 @@ import type { Job, AdminAnalytics } from '@/types';
 import { parseISO, isPast } from 'date-fns';
 
 const LOCAL_STORAGE_JOBS_KEY = 'hireglance_custom_jobs';
+const ANALYTICS_KEY = 'hireglance_analytics';
 
 // Helper to get jobs from localStorage
 const getLocalStorageJobs = (): Job[] => {
@@ -176,33 +177,36 @@ export function addJob(jobData: Omit<Job, 'id' | 'postedDate'> & { expirationDat
   return newJob;
 }
 
-// Analytics helpers (mocked with localStorage)
-const ANALYTICS_KEY = 'hireglance_analytics';
+// Analytics helpers
+const setAnalytics = (data: AdminAnalytics) => {
+  if (typeof window === 'undefined') return;
+  localStorage.setItem(ANALYTICS_KEY, JSON.stringify(data));
+};
 
 export const getAnalytics = (): AdminAnalytics => {
-  if (typeof window === 'undefined') {
-    return {
-      totalJobs: 0,
-      totalVisitors: 'N/A',
-      totalApplications: 0,
-      adsWatched: 0,
-      adsSkipped: 0,
-      adEarnings: '₹0 (Mock)',
-      siteGrowth: '+0% (Mock)',
-      adPromotionRequests: 0,
-    };
-  }
-  const stored = localStorage.getItem(ANALYTICS_KEY);
-  const defaults = {
-    totalVisitors: '1,234 (Mock)', // Placeholder
+  const defaults: AdminAnalytics = {
+    totalJobs: 0,
+    totalVisitors: '1,234 (Mock)',
     totalApplications: 0,
     adsWatched: 0,
     adsSkipped: 0,
-    adEarnings: '₹5,800 (Mock)', // Placeholder
-    siteGrowth: '+5% MoM (Mock)', // Placeholder
-    adPromotionRequests: 12, // New mock data
+    adEarnings: '₹5,800 (Mock)',
+    siteGrowth: '+5% MoM (Mock)',
+    adPromotionRequests: 12,
   };
-   const storedData = stored ? JSON.parse(stored) : {};
+  
+  if (typeof window === 'undefined') {
+    return {
+      ...defaults,
+      totalVisitors: 'N/A',
+      adEarnings: '₹0 (Mock)',
+      siteGrowth: '+0% (Mock)',
+    };
+  }
+
+  const stored = localStorage.getItem(ANALYTICS_KEY);
+  const storedData = stored ? JSON.parse(stored) : {};
+  
   return { 
       ...defaults, 
       ...storedData, 
@@ -210,26 +214,20 @@ export const getAnalytics = (): AdminAnalytics => {
   };
 };
 
-export const updateAnalytics = (data: Partial<AdminAnalytics>) => {
-  if (typeof window === 'undefined') return;
-  const current = getAnalytics();
-  localStorage.setItem(ANALYTICS_KEY, JSON.stringify({ ...current, ...data }));
-};
-
 export const incrementApplicationCount = () => {
   if (typeof window === 'undefined') return;
   const current = getAnalytics();
-  updateAnalytics({ totalApplications: (current.totalApplications || 0) + 1 });
+  setAnalytics({ ...current, totalApplications: (current.totalApplications || 0) + 1 });
 };
 
 export const incrementAdsWatched = () => {
   if (typeof window === 'undefined') return;
   const current = getAnalytics();
-  updateAnalytics({ adsWatched: (current.adsWatched || 0) + 1 });
+  setAnalytics({ ...current, adsWatched: (current.adsWatched || 0) + 1 });
 };
 
 export const incrementAdsSkipped = () => {
   if (typeof window === 'undefined') return;
   const current = getAnalytics();
-  updateAnalytics({ adsSkipped: (current.adsSkipped || 0) + 1 });
+  setAnalytics({ ...current, adsSkipped: (current.adsSkipped || 0) + 1 });
 };
