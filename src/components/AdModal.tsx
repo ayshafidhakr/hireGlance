@@ -6,7 +6,10 @@ import Image from 'next/image';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
+import { Skeleton } from '@/components/ui/skeleton';
 import { incrementAdsWatched, incrementAdsSkipped } from '@/lib/jobs';
+import { generateAdImage } from '@/ai/flows/generate-ad-flow';
+import { useToast } from '@/hooks/use-toast';
 
 interface AdModalProps {
   isOpen: boolean;
@@ -15,18 +18,44 @@ interface AdModalProps {
 }
 
 const AD_DURATION_SECONDS = 5;
+const FALLBACK_AD_IMAGE = "https://placehold.co/728x90.png";
 
 export function AdModal({ isOpen, onClose, onAdWatched }: AdModalProps) {
   const [progress, setProgress] = useState(0);
   const [countdown, setCountdown] = useState(AD_DURATION_SECONDS);
   const [adSkipped, setAdSkipped] = useState(false);
+  const [adImageUrl, setAdImageUrl] = useState<string>(FALLBACK_AD_IMAGE);
+  const [isAdLoading, setIsAdLoading] = useState(false);
+  const { toast } = useToast();
 
   useEffect(() => {
     let timer: NodeJS.Timeout | undefined;
     if (isOpen) {
+      // Reset states for new modal opening
       setProgress(0);
       setCountdown(AD_DURATION_SECONDS);
-      setAdSkipped(false); // Reset skip status
+      setAdSkipped(false);
+      setIsAdLoading(true);
+      setAdImageUrl(FALLBACK_AD_IMAGE);
+
+      // Generate a new ad image
+      generateAdImage({})
+        .then(response => {
+          setAdImageUrl(response.imageUrl);
+        })
+        .catch(error => {
+          console.error("Failed to generate ad image:", error);
+          toast({
+            title: "Ad Service Error",
+            description: "Could not load a dynamic ad. Displaying a placeholder.",
+            variant: "destructive"
+          });
+        })
+        .finally(() => {
+          setIsAdLoading(false);
+        });
+
+      // Start the countdown timer
       let elapsed = 0;
       timer = setInterval(() => {
         elapsed += 0.1;
@@ -37,18 +66,12 @@ export function AdModal({ isOpen, onClose, onAdWatched }: AdModalProps) {
           clearInterval(timer);
         }
       }, 100);
-    } else {
-       // If modal is closed before ad completion and not already marked as watched
-      if (progress < 100 && !adSkipped && isOpen === false && countdown > 0) { // Check isOpen from previous render
-         // This logic is tricky because isOpen becomes false immediately.
-         // A better way would be to track on an unmount-like effect or via the onClose prop
-      }
     }
     return () => clearInterval(timer);
-  }, [isOpen]); // countdown removed to prevent re-triggering interval
+  }, [isOpen, toast]);
 
   const handleModalClose = (open: boolean) => {
-    if (!open) { // Dialog is closing
+    if (!open) { 
       if (progress < 100 && !adSkipped) {
         incrementAdsSkipped();
         setAdSkipped(true);
@@ -62,29 +85,33 @@ export function AdModal({ isOpen, onClose, onAdWatched }: AdModalProps) {
       incrementAdsWatched();
     }
     onAdWatched();
-    onClose(); // Ensure modal closes
+    onClose();
   };
 
   return (
     <Dialog open={isOpen} onOpenChange={handleModalClose}>
       <DialogContent className="sm:max-w-[525px] bg-card text-card-foreground">
         <DialogHeader>
-          <DialogTitle className="text-primary font-headline">Watch Ad to Apply</DialogTitle>
+          <DialogTitle className="text-primary font-headline">A message from our sponsors</DialogTitle>
           <DialogDescription>
-            Please watch this short simulated advertisement to unlock the job application.
+            Please watch this short simulated advertisement to continue to the job application.
           </DialogDescription>
         </DialogHeader>
         <div className="my-4 space-y-4">
           <div className="aspect-video bg-muted rounded-md flex items-center justify-center overflow-hidden">
-            <Image 
-              src="https://placehold.co/728x90.png" 
-              alt="Simulated Advertisement" 
-              width={728} 
-              height={90}
-              data-ai-hint="advertisement banner"
-              className="object-contain"
-              priority
-            />
+            {isAdLoading ? (
+              <Skeleton className="w-full h-full" />
+            ) : (
+              <Image 
+                src={adImageUrl} 
+                alt="Simulated Advertisement" 
+                width={728} 
+                height={90}
+                data-ai-hint="advertisement banner"
+                className="object-contain w-full h-auto"
+                priority
+              />
+            )}
           </div>
           <Progress value={progress} className="w-full h-3 [&>div]:bg-accent" />
           {countdown > 0 && <p className="text-sm text-center text-muted-foreground">Ad playing... {countdown}s remaining</p>}
@@ -96,7 +123,7 @@ export function AdModal({ isOpen, onClose, onAdWatched }: AdModalProps) {
             className="bg-accent hover:bg-accent/90 text-accent-foreground w-full"
             aria-label={progress < 100 ? `Wait ${countdown} more seconds` : "Proceed to application"}
           >
-            {progress < 100 ? `Please wait... (${countdown}s)` : 'Proceed to Application'}
+            {progress < 100 ? `Please wait... (${countdown}s)` : 'Proceed'}
           </Button>
         </DialogFooter>
       </DialogContent>
