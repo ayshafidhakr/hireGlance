@@ -2,18 +2,34 @@
 'use client';
 
 import { useEffect, useState, useMemo } from 'react';
+import { useRouter } from 'next/navigation';
 import { getJobs } from '@/lib/jobs';
 import type { Job } from '@/types';
 import { JobCard } from '@/components/JobCard';
 import { AdBillboard } from '@/components/AdBillboard';
 
+const SUPERADMIN_AUTH_KEY = 'hireglance_superadmin_auth';
+
 export default function HomePage() {
   const [jobs, setJobs] = useState<Job[]>([]);
+  const router = useRouter();
+  const [isAuthCheckComplete, setIsAuthCheckComplete] = useState(false);
 
   useEffect(() => {
-    // Fetch jobs on the client side since they rely on localStorage
-    setJobs(getJobs());
-  }, []);
+    const authStatus = localStorage.getItem(SUPERADMIN_AUTH_KEY);
+    if (authStatus === 'true') {
+      router.replace('/superadmin/dashboard');
+    } else {
+      setIsAuthCheckComplete(true);
+    }
+  }, [router]);
+
+  useEffect(() => {
+    // Only fetch jobs if the auth check is complete and we are not redirecting
+    if (isAuthCheckComplete) {
+      setJobs(getJobs());
+    }
+  }, [isAuthCheckComplete]);
   
   const content = useMemo(() => {
     const items: React.ReactNode[] = [];
@@ -29,6 +45,14 @@ export default function HomePage() {
     return items;
   }, [jobs]);
 
+  // Prevent a flash of the home page before redirecting
+  if (!isAuthCheckComplete) {
+    return (
+      <div className="flex justify-center items-center min-h-[60vh]">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-12">
@@ -57,7 +81,7 @@ export default function HomePage() {
           ))
         )}
       </div>
-       {jobs.length === 0 && (
+       {jobs.length === 0 && isAuthCheckComplete && (
          <p className="text-center text-muted-foreground col-span-full">No active job openings at the moment. Please check back later.</p>
       )}
     </div>
