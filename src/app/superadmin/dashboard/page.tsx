@@ -5,7 +5,7 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Users, Briefcase, BarChart3, Eye, SkipForward, DollarSign, TrendingUp, FilePlus2, UserPlus, Link2 } from 'lucide-react';
+import { Users, Briefcase, BarChart3, Eye, SkipForward, IndianRupee, TrendingUp, FilePlus2, UserPlus, Link2 } from 'lucide-react';
 import { getAnalytics } from '@/lib/jobs';
 import type { AdminAnalytics } from '@/types';
 import { useToast } from '@/hooks/use-toast';
@@ -84,7 +84,7 @@ export default function SuperAdminDashboardPage() {
         
         <StatCard title="Ads Watched by Applicants" value={analytics.adsWatched} icon={Eye} description="Simulated ad views" colorClass="text-indigo-500" />
         <StatCard title="Ads Skipped by Applicants" value={analytics.adsSkipped} icon={SkipForward} description="Simulated ad skips" colorClass="text-orange-500" />
-        <StatCard title="Ad Earnings" value={analytics.adEarnings} icon={DollarSign} description="Mock data" colorClass="text-teal-500" />
+        <StatCard title="Ad Earnings" value={analytics.adEarnings} icon={IndianRupee} description="Mock data" colorClass="text-teal-500" />
         <StatCard title="Site Growth" value={analytics.siteGrowth} icon={TrendingUp} description="Mock data" colorClass="text-pink-500" />
       </div>
 

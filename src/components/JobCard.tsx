@@ -3,7 +3,7 @@ import Link from 'next/link';
 import type { Job } from '@/types';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Briefcase, MapPin, CalendarDays, DollarSign, HeartPulse, Stethoscope } from 'lucide-react';
+import { Briefcase, MapPin, CalendarDays, IndianRupee, HeartPulse, Stethoscope } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 
 interface JobCardProps {
@@ -43,7 +43,7 @@ export function JobCard({ job }: JobCardProps) {
         <div className="text-xs text-muted-foreground space-y-1">
           {job.salaryRange && (
             <div className="flex items-center gap-1">
-              <DollarSign size={14} /> <span>{job.salaryRange}</span>
+              <IndianRupee size={14} /> <span>{job.salaryRange}</span>
             </div>
           )}
           <div className="flex items-center gap-1">

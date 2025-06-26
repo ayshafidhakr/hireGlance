@@ -16,7 +16,7 @@ import { DatePicker } from '@/components/ui/date-picker'; // Ensure this path is
 import { useToast } from '@/hooks/use-toast';
 import { addJob } from '@/lib/jobs'; // Function to add job to localStorage
 import type { Job } from '@/types';
-import { FilePlus2, ListChecks, UserCheck, Briefcase, MapPinIcon, DollarSign, CalendarDays, CalendarClock } from 'lucide-react';
+import { FilePlus2, ListChecks, UserCheck, Briefcase, MapPinIcon, IndianRupee, CalendarDays, CalendarClock } from 'lucide-react';
 
 const jobFormSchema = z.object({
   title: z.string().min(3, { message: 'Title must be at least 3 characters.' }),
@@ -255,7 +255,7 @@ export default function CreateJobPage() {
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Salary Range (Optional)</FormLabel>
-                       {fieldIconWrapper(DollarSign, <FormControl><Input placeholder="e.g., ₹5,00,000 - ₹7,00,000 per year" {...field} /></FormControl>)}
+                       {fieldIconWrapper(IndianRupee, <FormControl><Input placeholder="e.g., ₹5,00,000 - ₹7,00,000 per year" {...field} /></FormControl>)}
                       <FormMessage />
                     </FormItem>
                   )}
