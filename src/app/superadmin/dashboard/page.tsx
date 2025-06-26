@@ -28,7 +28,19 @@ export default function SuperAdminDashboardPage() {
   const { toast } = useToast();
 
   useEffect(() => {
-    setAnalytics(getAnalytics());
+    // Function to fetch and update analytics
+    const fetchAnalytics = () => {
+      setAnalytics(getAnalytics());
+    };
+
+    // Initial fetch
+    fetchAnalytics();
+
+    // Set up an interval to refresh data every 2 seconds for a "live" feel
+    const intervalId = setInterval(fetchAnalytics, 2000);
+
+    // Cleanup function to clear the interval when the component unmounts
+    return () => clearInterval(intervalId);
   }, []);
 
   const handleCopyAdminLink = () => {
