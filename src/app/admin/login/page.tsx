@@ -64,6 +64,9 @@ export default function LoginPage() {
                 className="text-base"
               />
             </div>
+            <CardDescription className="text-xs text-center text-muted-foreground pt-2">
+                Hint: Use <strong>admin</strong> / <strong>password</strong> for this demo.
+            </CardDescription>
           </CardContent>
           <CardFooter>
             <Button type="submit" className="w-full text-lg py-6 bg-primary hover:bg-primary/90">

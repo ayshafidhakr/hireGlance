@@ -64,6 +64,9 @@ export default function SuperAdminLoginPage() {
                 className="text-base"
               />
             </div>
+            <CardDescription className="text-xs text-center text-muted-foreground pt-2">
+                Hint: Use <strong>superadmin</strong> / <strong>superpassword</strong> for this demo.
+            </CardDescription>
           </CardContent>
           <CardFooter>
             <Button type="submit" className="w-full text-lg py-6 bg-accent hover:bg-accent/90 text-accent-foreground">
