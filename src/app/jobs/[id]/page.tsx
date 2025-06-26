@@ -15,16 +15,17 @@ import { Briefcase, MapPin, CalendarDays, CheckCircle, AlertTriangle, ArrowLeft,
 import { useToast } from '@/hooks/use-toast';
 
 export default function JobDetailPage({ params }: { params: { id: string } }) {
+  const { id } = params; // Correctly get id from params here
   const [job, setJob] = useState<Job | null | undefined>(undefined);
   const [isAdModalOpen, setIsAdModalOpen] = useState(false);
   const [hasAdBeenWatched, setHasAdBeenWatched] = useState(false);
   const { toast } = useToast();
 
   useEffect(() => {
-    const { id } = params;
+    // Now useEffect depends on the stable 'id' variable
     const fetchedJob = getJobById(id);
     setJob(fetchedJob);
-  }, [params]);
+  }, [id]);
 
   if (job === undefined) {
     return (
@@ -39,7 +40,7 @@ export default function JobDetailPage({ params }: { params: { id: string } }) {
     return null;
   }
   
-  const isJobExpired = job.expirationDate && isPast(job.expirationDate);
+  const isJobExpired = job.expirationDate && isPast(new Date(job.expirationDate));
 
   const handleApplyClick = () => {
     setIsAdModalOpen(true);
@@ -91,7 +92,7 @@ export default function JobDetailPage({ params }: { params: { id: string } }) {
                     <MapPin size={16} /> <span>{job.location}</span>
                 </div>
                 <div className="flex items-center gap-2">
-                    <CalendarDays size={16} /> <span>Posted on {format(job.postedDate, 'MMMM d, yyyy')}</span>
+                    <CalendarDays size={16} /> <span>Posted on {format(new Date(job.postedDate), 'MMMM d, yyyy')}</span>
                 </div>
             </div>
              {isJobExpired && (
