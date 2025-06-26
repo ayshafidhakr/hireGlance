@@ -8,17 +8,17 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter }
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { AdModal } from '@/components/AdModal';
-import { JobApplicationForm } from '@/components/JobApplicationForm';
-import { getJobById } from '@/lib/jobs';
+import { getJobById, incrementApplicationCount } from '@/lib/jobs';
 import type { Job } from '@/types';
 import { format, isPast } from 'date-fns';
-import { Briefcase, MapPin, CalendarDays, CheckCircle, AlertTriangle, ArrowLeft } from 'lucide-react';
+import { Briefcase, MapPin, CalendarDays, CheckCircle, AlertTriangle, ArrowLeft, ExternalLink } from 'lucide-react';
+import { useToast } from '@/hooks/use-toast';
 
 export default function JobDetailPage({ params }: { params: { id: string } }) {
   const [job, setJob] = useState<Job | null | undefined>(undefined);
   const [isAdModalOpen, setIsAdModalOpen] = useState(false);
   const [hasAdBeenWatched, setHasAdBeenWatched] = useState(false);
-  const [isSubmitted, setIsSubmitted] = useState(false);
+  const { toast } = useToast();
 
   useEffect(() => {
     const fetchedJob = getJobById(params.id);
@@ -47,29 +47,23 @@ export default function JobDetailPage({ params }: { params: { id: string } }) {
   const handleAdWatched = () => {
     setHasAdBeenWatched(true);
   };
-
-  const handleApplicationSuccess = () => {
-    setIsSubmitted(true);
-  };
   
-  if (isSubmitted) {
-    return (
-      <Card className="text-center py-10 max-w-2xl mx-auto shadow-lg">
-        <CardContent className="flex flex-col items-center">
-            <CheckCircle className="h-20 w-20 text-green-500 mb-6" />
-            <h1 className="text-3xl font-bold text-primary mb-2">Application Submitted!</h1>
-            <p className="text-muted-foreground mb-6 max-w-md">
-            Thank you for applying for the {job.title} position. We have received your application and will be in touch if you are a good fit.
-            </p>
-            <Button asChild variant="outline">
-                <Link href="/">
-                    <ArrowLeft className="mr-2 h-4 w-4" /> Back to Job Listings
-                </Link>
-            </Button>
-        </CardContent>
-      </Card>
-    );
-  }
+  const handleProceedToApplication = () => {
+    if (job?.applicationUrl) {
+        incrementApplicationCount();
+        window.open(job.applicationUrl, '_blank', 'noopener,noreferrer');
+        toast({
+            title: "Redirecting you...",
+            description: "Opening the company's application page in a new tab.",
+        });
+    } else {
+        toast({
+            title: "Application Link Missing",
+            description: "We're sorry, the application link for this job is not available.",
+            variant: "destructive",
+        });
+    }
+  };
 
   return (
     <>
@@ -133,15 +127,29 @@ export default function JobDetailPage({ params }: { params: { id: string } }) {
                 </Button>
              </CardFooter>
           )}
+
+          {hasAdBeenWatched && !isJobExpired && (
+            <CardFooter className="p-6 bg-secondary/20 flex-col items-start gap-4">
+                <Button 
+                    onClick={handleProceedToApplication} 
+                    className="w-full sm:w-auto text-lg py-6 px-8 bg-primary hover:bg-primary/90"
+                    disabled={!job.applicationUrl}
+                >
+                    <ExternalLink className="mr-2 h-5 w-5" />
+                    Proceed to Application
+                </Button>
+                <p className="text-xs text-muted-foreground">
+                    You will be redirected to the company's official website to complete your application.
+                </p>
+                {!job.applicationUrl && (
+                    <p className="text-sm text-destructive font-medium mt-2">
+                        This job posting does not have an external application link.
+                    </p>
+                )}
+            </CardFooter>
+          )}
+
         </Card>
-
-        {hasAdBeenWatched && !isJobExpired && (
-            <JobApplicationForm 
-                jobTitle={job.title}
-                onSubmitSuccess={handleApplicationSuccess}
-            />
-        )}
-
       </div>
     </>
   );

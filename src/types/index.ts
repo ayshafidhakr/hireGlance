@@ -12,6 +12,7 @@ export interface Job {
   expirationDate?: Date; // Added expiration date
   salaryRange?: string;
   department?: string;
+  applicationUrl?: string;
 }
 
 export interface AdminAnalytics {

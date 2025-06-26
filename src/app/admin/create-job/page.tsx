@@ -12,11 +12,11 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { DatePicker } from '@/components/ui/date-picker'; // Ensure this path is correct
+import { DatePicker } from '@/components/ui/date-picker';
 import { useToast } from '@/hooks/use-toast';
-import { addJob } from '@/lib/jobs'; // Function to add job to localStorage
+import { addJob } from '@/lib/jobs';
 import type { Job } from '@/types';
-import { FilePlus2, ListChecks, UserCheck, Briefcase, MapPinIcon, IndianRupee, CalendarDays, CalendarClock } from 'lucide-react';
+import { FilePlus2, ListChecks, UserCheck, Briefcase, MapPinIcon, IndianRupee, CalendarDays, CalendarClock, Link as LinkIcon } from 'lucide-react';
 
 const jobFormSchema = z.object({
   title: z.string().min(3, { message: 'Title must be at least 3 characters.' }),
@@ -29,6 +29,7 @@ const jobFormSchema = z.object({
   salaryRange: z.string().optional(),
   department: z.string().optional(),
   expirationDate: z.date().optional(),
+  applicationUrl: z.string().url({ message: "Please enter a valid URL." }).optional().or(z.literal('')),
 });
 
 type JobFormValues = z.infer<typeof jobFormSchema>;
@@ -50,6 +51,7 @@ export default function CreateJobPage() {
       salaryRange: '',
       department: '',
       expirationDate: undefined,
+      applicationUrl: '',
     },
   });
 
@@ -59,7 +61,6 @@ export default function CreateJobPage() {
         ...data,
         responsibilities: data.responsibilities.split('\n').map(s => s.trim()).filter(s => s),
         qualifications: data.qualifications.split('\n').map(s => s.trim()).filter(s => s),
-        // Convert date to ISO string for localStorage, addJob will handle Date object creation
         expirationDate: data.expirationDate ? data.expirationDate.toISOString() : undefined,
       };
       
@@ -70,7 +71,7 @@ export default function CreateJobPage() {
         description: `The job "${data.title}" has been posted.`,
       });
       form.reset();
-      router.push('/admin/dashboard'); // Or a page showing all jobs
+      router.push('/admin/dashboard');
     } catch (error) {
       console.error("Failed to create job:", error);
       toast({
@@ -272,6 +273,19 @@ export default function CreateJobPage() {
                   )}
                 />
             </div>
+
+             <FormField
+              control={form.control}
+              name="applicationUrl"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Application URL (Optional)</FormLabel>
+                    {fieldIconWrapper(LinkIcon, <FormControl><Input placeholder="https://company.com/apply-here" {...field} /></FormControl>)}
+                  <FormDescription>The direct link to the company's application page.</FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
             <Button type="submit" className="w-full text-lg py-3 bg-primary hover:bg-primary/90 mt-8">
               <FilePlus2 className="mr-2 h-5 w-5" /> Post Job

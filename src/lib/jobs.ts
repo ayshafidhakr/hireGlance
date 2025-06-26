@@ -59,7 +59,8 @@ const staticJobs: Job[] = [
     postedDate: new Date('2024-07-15T09:00:00Z'),
     expirationDate: new Date('2024-08-30T23:59:59Z'),
     salaryRange: '₹8,00,000 - ₹12,00,000 per year',
-    department: 'Intensive Care Unit'
+    department: 'Intensive Care Unit',
+    applicationUrl: 'https://example.com/apply/1',
   },
   {
     id: '2',
@@ -83,7 +84,8 @@ const staticJobs: Job[] = [
     postedDate: new Date('2024-07-20T14:30:00Z'),
     expirationDate: new Date('2024-09-15T23:59:59Z'),
     salaryRange: '₹4,50,000 - ₹6,50,000 per year',
-    department: 'Laboratory Services'
+    department: 'Laboratory Services',
+    applicationUrl: 'https://example.com/apply/2',
   },
   {
     id: '3',
@@ -107,7 +109,8 @@ const staticJobs: Job[] = [
     postedDate: new Date('2024-06-10T11:00:00Z'),
     expirationDate: new Date('2024-07-01T23:59:59Z'), // Expired
     salaryRange: '₹400 - ₹600 per hour',
-    department: 'Rehabilitation Services'
+    department: 'Rehabilitation Services',
+    applicationUrl: 'https://example.com/apply/3',
   },
   {
     id: '4',
@@ -130,7 +133,8 @@ const staticJobs: Job[] = [
     employmentType: 'Full-time',
     postedDate: new Date('2024-07-22T08:00:00Z'),
     // No expiration date, so it's considered active indefinitely unless filtered otherwise
-    department: 'Surgical Services'
+    department: 'Surgical Services',
+    applicationUrl: 'https://example.com/apply/4',
   },
 ];
 
