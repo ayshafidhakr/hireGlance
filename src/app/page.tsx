@@ -1,10 +1,11 @@
 
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { getJobs } from '@/lib/jobs';
 import type { Job } from '@/types';
 import { JobCard } from '@/components/JobCard';
+import { AdBillboard } from '@/components/AdBillboard';
 
 export default function HomePage() {
   const [jobs, setJobs] = useState<Job[]>([]);
@@ -13,6 +14,21 @@ export default function HomePage() {
     // Fetch jobs on the client side since they rely on localStorage
     setJobs(getJobs());
   }, []);
+  
+  const content = useMemo(() => {
+    const items: React.ReactNode[] = [];
+    const AD_INTERVAL = 4; // Show an ad every 4 job cards
+
+    jobs.forEach((job, index) => {
+      items.push(<JobCard key={job.id} job={job} />);
+      // Add an ad billboard after every AD_INTERVAL jobs
+      if ((index + 1) > 0 && (index + 1) % AD_INTERVAL === 0) {
+        items.push(<AdBillboard key={`ad-${index}`} />);
+      }
+    });
+    return items;
+  }, [jobs]);
+
 
   return (
     <div className="space-y-12">
@@ -27,9 +43,7 @@ export default function HomePage() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
         {jobs.length > 0 ? (
-          jobs.map((job) => (
-            <JobCard key={job.id} job={job} />
-          ))
+          content
         ) : (
           // Placeholder for loading state or if no jobs are available
           Array.from({ length: 6 }).map((_, index) => (
