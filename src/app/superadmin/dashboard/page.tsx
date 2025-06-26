@@ -80,7 +80,7 @@ export default function SuperAdminDashboardPage() {
         <StatCard title="Total Jobs Posted" value={analytics.totalJobs} icon={Briefcase} description="All active and inactive jobs" colorClass="text-blue-500" />
         <StatCard title="Total Applications" value={analytics.totalApplications} icon={Users} description="Across all jobs" colorClass="text-green-500" />
         <StatCard title="Ad Promotion Requests" value={analytics.adPromotionRequests} icon={UserPlus} description="Mock data" colorClass="text-cyan-500" />
-        <StatCard title="Total Site Visitors" value={analytics.totalVisitors.toLocaleString()} icon={BarChart3} description="Mock data" colorClass="text-purple-500" />
+        <StatCard title="Total Site Visitors" value={analytics.totalVisitors} icon={BarChart3} description="Mock data" colorClass="text-purple-500" />
         
         <StatCard title="Ads Watched by Applicants" value={analytics.adsWatched} icon={Eye} description="Simulated ad views" colorClass="text-indigo-500" />
         <StatCard title="Ads Skipped by Applicants" value={analytics.adsSkipped} icon={SkipForward} description="Simulated ad skips" colorClass="text-orange-500" />
