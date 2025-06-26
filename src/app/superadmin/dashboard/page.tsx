@@ -5,7 +5,7 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Users, Briefcase, BarChart3, Eye, SkipForward, IndianRupee, TrendingUp, FilePlus2, UserPlus, Link2 } from 'lucide-react';
+import { Users, Briefcase, BarChart3, Eye, SkipForward, IndianRupee, TrendingUp, FilePlus2, UserPlus, Link2, LogIn } from 'lucide-react';
 import { getAnalytics } from '@/lib/jobs';
 import type { AdminAnalytics } from '@/types';
 import { useToast } from '@/hooks/use-toast';
@@ -91,16 +91,23 @@ export default function SuperAdminDashboardPage() {
       <Card className="shadow-lg bg-secondary/30">
         <CardHeader>
           <CardTitle className="text-xl">Administrator Access</CardTitle>
-          <CardDescription>Share this link with your staff to allow them to post and manage jobs.</CardDescription>
+          <CardDescription>Provide access to your staff to post and manage jobs.</CardDescription>
         </CardHeader>
         <CardContent>
             <div className="flex flex-col sm:flex-row gap-4 items-center p-4 border rounded-lg bg-background">
                 <div className="flex-grow">
                     <p className="font-mono text-sm break-all text-muted-foreground">/admin/login</p>
                 </div>
-                <Button onClick={handleCopyAdminLink} variant="outline" className="w-full sm:w-auto">
-                    <Link2 className="mr-2 h-4 w-4"/> Copy Link
-                </Button>
+                <div className="flex items-center gap-2 flex-shrink-0">
+                    <Button onClick={handleCopyAdminLink} variant="outline" className="w-full sm:w-auto">
+                        <Link2 className="mr-2 h-4 w-4"/> Copy Link
+                    </Button>
+                    <Button asChild variant="default" className="w-full sm:w-auto bg-primary hover:bg-primary/90">
+                      <Link href="/admin/login" target="_blank">
+                          <LogIn className="mr-2 h-4 w-4" /> Go to Admin
+                      </Link>
+                    </Button>
+                </div>
             </div>
         </CardContent>
       </Card>
