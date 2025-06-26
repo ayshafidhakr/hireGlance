@@ -68,4 +68,4 @@ To get a local copy up and running, follow these simple steps.
 
 This project is licensed under a proprietary license. See the [LICENSE](LICENSE) file for details.
 
-Copyright (c) 2024 Fidhaysha. All Rights Reserved.
+Copyright (c) 2025 AYSHA FIDHA. All Rights Reserved.
