@@ -62,7 +62,7 @@ To get a local copy up and running, follow these simple steps.
         npm run genkit:dev
         ```
 
-    The application will be available at `http://localhost:9002`.
+    The application will be available at `https://ayshafidhakr.github.io/hireGlance/`.
 
 ## 📄 License
 
